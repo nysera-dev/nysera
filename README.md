@@ -1,14 +1,40 @@
+<div align="center">
+
+<img src="docs/logo.png" width="96" alt="Nysera logo">
+
 # Nysera
 
-**An AI agent crew in your terminal.** Give Nysera a task. It plans the work as a graph of lanes, runs the lanes in parallel on the right model for each kind of work, and only calls a lane **verified** when a real check passed.
+**An AI agent crew in your terminal.**
+Give it a task — it plans the work as parallel lanes, runs each lane on the right model,
+and only calls work **verified** when a real check passed.
 
-```
-planned → running → reported (agent says done) → verified (a test or review passed)
-```
+[![License: MIT](https://img.shields.io/badge/license-MIT-ff7ac2?style=flat-square)](LICENSE)
+[![Node](https://img.shields.io/badge/node-%E2%89%A518-c58cff?style=flat-square&logo=node.js&logoColor=white)](https://nodejs.org)
+[![Models via OpenRouter](https://img.shields.io/badge/models-OpenRouter-f2a65a?style=flat-square)](https://openrouter.ai)
+[![Desktop app](https://img.shields.io/github/v/release/nysera-dev/nysera-desktop?label=desktop&style=flat-square&color=b8d86b)](https://github.com/nysera-dev/nysera-desktop/releases/latest)
+
+[Website](https://nysera.app) · [Install](#install) · [How it works](#how-it-works) · [Desktop app](https://github.com/nysera-dev/nysera-desktop)
+
+<img src="docs/cli-demo.png" alt="nysera run: three lanes planned, run in parallel and verified by a test command" width="820">
+
+<sub>Screenshot from demo mode (<code>NYSERA_MOCK=1</code>), which runs the whole flow offline.</sub>
+
+</div>
+
+---
+
+## Why Nysera
+
+- **Parallel lanes.** A planner model splits your task into 2–7 lanes with dependencies. Lanes that don't depend on each other run at the same time.
+- **The right model per lane.** Every lane gets a category — `code`, `test`, `docs`, `deep`, `quick`, `research` — and each category has its own ordered model chain.
+- **No silent downgrade.** If a model fails, the next one in the chain takes over, and the log says which model actually answered.
+- **Evidence before "done".** A lane is only `verified` when your test command passes, or a separate reviewer model passes it. A failed test keeps it `reported`.
+- **One key, many providers.** Everything goes through [OpenRouter](https://openrouter.ai), so one API key covers OpenAI, Claude, Gemini, DeepSeek, Qwen, Kimi, Mistral and more.
+- **Safe by default.** Nothing in your project changes unless you pass `--write`, and even then originals are backed up first.
 
 ## Install
 
-Requires Node.js 18+. Website: [nysera.app](https://nysera.app)
+Requires [Node.js](https://nodejs.org) 18+ and Git.
 
 ```bash
 npm i -g github:nysera-dev/nysera
@@ -20,39 +46,55 @@ Or from a clone:
 git clone https://github.com/nysera-dev/nysera && cd nysera && npm link
 ```
 
-Prefer a window? [Nysera Desktop](https://github.com/nysera-dev/nysera-desktop/releases/latest) for macOS (Apple silicon) and Windows runs the same engine.
-
-## Set up
-
-Nysera calls models through [OpenRouter](https://openrouter.ai), so one API key covers OpenAI, Claude, Gemini, DeepSeek, Qwen, Kimi, Mistral and more.
+## Quick start
 
 ```bash
-nysera setup     # paste your OpenRouter key (stored in ~/.nysera/config.json)
-nysera doctor    # checks the key and that every model in your chains exists
-```
-
-You can also set `OPENROUTER_API_KEY` instead of running setup.
-
-## Run a task
-
-```bash
+nysera setup     # paste your OpenRouter key (openrouter.ai/keys)
+nysera doctor    # checks Node, your key, and that every model in your chains exists
 nysera run "add a /health endpoint to the express app and test it" --write --test "npm test"
 ```
 
-What happens:
+No key yet? Try everything offline:
 
-1. **Plan** — the `plan` model splits the task into 2–7 lanes with dependencies.
-2. **Run** — lanes with no dependencies start together; later layers get the earlier lanes' output.
-3. **Route** — each lane has a category (`code`, `test`, `docs`, `deep`, `quick`, `research`). The category picks an ordered model chain. If a model fails, the next one takes over, and the log says which model actually answered (no silent downgrade).
-4. **Verify** — with `--test "<cmd>"`, lanes become `verified` only if the command passes. A failed test keeps them `reported`. Without `--test`, a separate reviewer model checks each lane.
-5. **Log** — everything is saved in `.nysera/runs/<id>/`: `summary.md`, each lane's full output, generated files, and test output.
+```bash
+NYSERA_MOCK=1 nysera run "hello world in python with a test" --write --test "python3 -m unittest"
+```
 
-### Options
+## How it works
+
+```
+plan  →  lanes in parallel (layer by layer)  →  collect files  →  verify  →  report
+```
+
+| Status | Meaning |
+|---|---|
+| `planned` | In the plan. Nothing has run yet. |
+| `running` | A model from the lane's chain is working on it. |
+| `reported` | The model says it finished. Nobody has checked it. |
+| `verified` | Your `--test` command passed, or the reviewer model passed it. |
+| `failed` / `skipped` | Every model in the chain failed, or a lane it depends on did. |
+
+Every run is saved in `.nysera/runs/<id>/`: `summary.md`, each lane's full output, generated files, and test output.
+
+## Commands
+
+| Command | What it does |
+|---|---|
+| `nysera setup` | Save and check your OpenRouter key, write default model chains. |
+| `nysera doctor` | Check Node, the key, and that every model ID still exists. |
+| `nysera run "<task>"` | Plan → parallel lanes → verify. |
+| `nysera model` | Show the chain per category. |
+| `nysera model set <cat> <id,id,…>` | Change a category's chain. |
+| `nysera model effort <cat> <low\|medium\|high>` | Change how much a category's model may write. |
+| `nysera model reset` | Back to the default chains. |
+| `nysera runs` | List past runs in this folder. |
+
+### `nysera run` options
 
 | Option | What it does |
 |---|---|
-| `--write` | Write generated files into the project. Existing files are backed up into the run folder first. Without it, files only go to `.nysera/runs/<id>/files/`. |
-| `--test "<cmd>"` | Run a command after the lanes. Pass → lanes are verified. |
+| `--write` | Write generated files into the project. Existing files are backed up into the run folder first. |
+| `--test "<cmd>"` | Run a command after the lanes. Pass → lanes are `verified`. |
 | `--no-review` | Skip the reviewer model. |
 | `--concurrency <n>` | Max lanes at once (default 4). |
 | `--dir <path>` | Project folder (default: current folder). |
@@ -60,29 +102,36 @@ What happens:
 
 ## Model chains
 
-```bash
-nysera model                                   # show chains per category
-nysera model set code anthropic/claude-sonnet-4,deepseek/deepseek-chat
-nysera model effort review high
-nysera model reset
-```
+| Category | Default chain | Effort |
+|---|---|---|
+| `plan` | claude-sonnet-4 → gpt-4o → gemini-2.5-pro | high |
+| `code` | claude-sonnet-4 → deepseek-chat → qwen-2.5-coder-32b | medium |
+| `test` | claude-sonnet-4 → deepseek-chat → gpt-4o | medium |
+| `docs` | gpt-4o → gemini-2.5-flash → mistral-small | low |
+| `deep` | claude-sonnet-4 → gemini-2.5-pro → gpt-4o | high |
+| `quick` | gemini-2.5-flash → deepseek-chat → gpt-4o-mini | low |
+| `research` | gemini-2.5-pro → claude-sonnet-4 → kimi-k2 | high |
+| `review` | gpt-4o → gemini-2.5-pro → claude-sonnet-4 | high |
 
-Chains live in `~/.nysera/routing/model-chains.json`. Model IDs are OpenRouter IDs; they change over time, so run `nysera doctor` after editing.
+Chains live in `~/.nysera/routing/model-chains.json`. Model IDs change over time — run `nysera doctor` after editing.
 
-## Try it without a key
+## Prefer a window?
 
-```bash
-NYSERA_MOCK=1 nysera run "hello world in python with a test" --write --test "python3 -m unittest"
-```
+[**Nysera Desktop**](https://github.com/nysera-dev/nysera-desktop/releases/latest) for macOS (Apple silicon) and Windows runs the same engine, with chat bots and a live lanes view.
 
-Mock mode uses canned replies so you can see the whole flow offline.
+<img src="docs/desktop-run.png" alt="Nysera Desktop running lanes" width="760">
 
 ## Safety
 
 - Files are only written inside the project folder; absolute paths and `..` are refused.
 - Without `--write`, Nysera never touches your project files.
 - `--test` runs the command you give it in your shell — only pass commands you trust.
+- Your key is stored in `~/.nysera/config.json` with owner-only permissions, or read from `OPENROUTER_API_KEY`.
+
+## Contributing
+
+Bug reports and ideas are welcome — see [CONTRIBUTING.md](CONTRIBUTING.md) and open an [issue](https://github.com/nysera-dev/nysera/issues/new/choose).
 
 ## License
 
-MIT
+[MIT](LICENSE)
