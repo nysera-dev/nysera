@@ -1,0 +1,38 @@
+{
+  "name": "nysera",
+  "version": "0.1.0",
+  "description": "Nysera \u2014 an AI agent crew in your terminal. Splits a task into parallel lanes, routes each lane to the right model via OpenRouter, and only calls work verified when a check passed.",
+  "type": "module",
+  "bin": {
+    "nysera": "bin/nysera.js"
+  },
+  "files": [
+    "bin",
+    "src",
+    "README.md",
+    "LICENSE"
+  ],
+  "engines": {
+    "node": ">=18"
+  },
+  "scripts": {
+    "test": "NYSERA_MOCK=1 node bin/nysera.js run \"write a hello world in python and a test for it\" --no-tui"
+  },
+  "keywords": [
+    "ai",
+    "agent",
+    "cli",
+    "openrouter",
+    "llm",
+    "multi-agent"
+  ],
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/nysera-dev/nysera.git"
+  },
+  "homepage": "https://nysera.app",
+  "bugs": {
+    "url": "https://github.com/nysera-dev/nysera/issues"
+  }
+}
