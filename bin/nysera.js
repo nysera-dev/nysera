@@ -103,7 +103,7 @@ async function doctor() {
   try { ids = await listModels(cfg.apiKey); } catch (e) { log.warn(`could not fetch model list: ${e.message}`); }
   for (const [cat, v] of Object.entries(chains)) {
     if (!ids) { log.info(`${pad(cat, 9)} ${v.chain.join(' → ')}`); continue; }
-    const missing = v.chain.filter((m) => !ids.has(m));
+    const missing = v.chain.filter((m) => !m.startsWith('~') && !ids.has(m)); // ~ = OpenRouter "latest" alias, not in the list
     if (missing.length === v.chain.length) { log.err(`${pad(cat, 9)} none of its models exist: ${missing.join(', ')}`); problems++; }
     else if (missing.length) log.warn(`${pad(cat, 9)} unknown model(s) will be skipped: ${missing.join(', ')}`);
     else log.ok(`${pad(cat, 9)} ${v.chain.join(' → ')}`);

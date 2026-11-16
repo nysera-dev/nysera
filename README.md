@@ -104,16 +104,16 @@ Every run is saved in `.nysera/runs/<id>/`: `summary.md`, each lane's full outpu
 
 | Category | Default chain | Effort |
 |---|---|---|
-| `plan` | claude-sonnet-4 → gpt-4o → gemini-2.5-pro | high |
-| `code` | claude-sonnet-4 → deepseek-chat → qwen-2.5-coder-32b | medium |
-| `test` | claude-sonnet-4 → deepseek-chat → gpt-4o | medium |
-| `docs` | gpt-4o → gemini-2.5-flash → mistral-small | low |
-| `deep` | claude-sonnet-4 → gemini-2.5-pro → gpt-4o | high |
-| `quick` | gemini-2.5-flash → deepseek-chat → gpt-4o-mini | low |
-| `research` | gemini-2.5-pro → claude-sonnet-4 → kimi-k2 | high |
-| `review` | gpt-4o → gemini-2.5-pro → claude-sonnet-4 | high |
+| `plan` | claude-sonnet-latest → gpt-latest → gemini-pro-latest → deepseek-chat | high |
+| `code` | claude-sonnet-latest → deepseek-chat → gpt-latest | medium |
+| `test` | claude-sonnet-latest → deepseek-chat → gpt-latest | medium |
+| `docs` | gpt-mini-latest → gemini-flash-latest → deepseek-chat | low |
+| `deep` | claude-sonnet-latest → gemini-pro-latest → gpt-latest | high |
+| `quick` | gemini-flash-latest → deepseek-chat → gpt-mini-latest | low |
+| `research` | gemini-pro-latest → claude-sonnet-latest → kimi-latest | high |
+| `review` | gpt-latest → gemini-pro-latest → claude-sonnet-latest | high |
 
-Chains live in `~/.nysera/routing/model-chains.json`. Model IDs change over time — run `nysera doctor` after editing.
+IDs starting with `~` are OpenRouter "latest" aliases — they always point to the newest model in that family, so they never go stale. Chains live in `~/.nysera/routing/model-chains.json`; run `nysera doctor` after editing.
 
 ## Prefer a window?
 
