@@ -54,11 +54,7 @@ nysera doctor    # checks Node, your key, and that every model in your chains ex
 nysera run "add a /health endpoint to the express app and test it" --write --test "npm test"
 ```
 
-No key yet? Try everything offline:
-
-```bash
-NYSERA_MOCK=1 nysera run "hello world in python with a test" --write --test "python3 -m unittest"
-```
+Every run uses live models on your own OpenRouter key: real files, real tests, no canned output.
 
 ## How it works
 
