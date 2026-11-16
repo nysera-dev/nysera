@@ -98,6 +98,7 @@ Every run is saved in `.nysera/runs/<id>/`: `summary.md`, each lane's full outpu
 | `--no-review` | Skip the reviewer model. |
 | `--concurrency <n>` | Max lanes at once (default 4). |
 | `--dir <path>` | Project folder (default: current folder). |
+| `--fix <n>` | When `--test` fails, a fixer model reads the failure, repairs the files and re-runs the check, up to `n` times (default 2, `0` = off). |
 | `--no-tui` | Plain log lines instead of the live board. |
 
 ## Model chains

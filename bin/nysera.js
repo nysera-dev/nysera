@@ -19,7 +19,7 @@ function opt(name) {
 function positional() {
   const out = [];
   for (let i = 1; i < argv.length; i++) {
-    if (argv[i].startsWith('--')) { if (['test', 'dir', 'concurrency', 'key'].includes(argv[i].slice(2))) i++; continue; }
+    if (argv[i].startsWith('--')) { if (['test', 'dir', 'concurrency', 'key', 'fix'].includes(argv[i].slice(2))) i++; continue; }
     out.push(argv[i]);
   }
   return out;
@@ -53,6 +53,7 @@ ${c.bold('Run options')}
   --test "<cmd>"       run a command after the lanes; pass → lanes are ${c.green('verified')}
   --no-review          skip the reviewer model
   --concurrency <n>    max lanes at once (default 4)
+  --fix <n>            if --test fails, let the fixer repair and retry n times (default 2, 0 = off)
   --dir <path>         project folder (default: current folder)
   --no-tui             plain log output
 
@@ -162,6 +163,7 @@ async function runCmd() {
       apiKey: cfg.apiKey, chains: loadChains(), task, cwd,
       write: flag('write'), testCmd: opt('test'), review: !flag('no-review'),
       concurrency: Math.max(1, Number(opt('concurrency')) || 4),
+      fixAttempts: opt('fix') !== undefined && opt('fix') !== null ? Math.max(0, Number(opt('fix')) || 0) : 2,
       tui: process.stdout.isTTY && !flag('no-tui'), signal: ctrl.signal
     });
   } catch (e) {
