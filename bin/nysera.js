@@ -7,7 +7,7 @@ import { checkKey, listModels } from '../src/models.js';
 import { run } from '../src/run.js';
 import { c, banner, log, pad } from '../src/ui.js';
 
-const VERSION = '0.1.0';
+const VERSION = '0.2.0';
 const argv = process.argv.slice(2);
 const cmd = argv[0];
 

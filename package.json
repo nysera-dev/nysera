@@ -1,6 +1,6 @@
 {
   "name": "nysera",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "Nysera \u2014 an AI agent crew in your terminal. Splits a task into parallel lanes, routes each lane to the right model via OpenRouter, and only calls work verified when a check passed.",
   "type": "module",
   "bin": {
