@@ -15,9 +15,9 @@ and only calls work **verified** when a real check passed.
 
 [Website](https://nysera.app) · [Install](#install) · [How it works](#how-it-works) · [Desktop app](https://github.com/nysera-dev/nysera-desktop)
 
-<img src="docs/cli-demo.gif" alt="nysera run: three lanes planned, run in parallel and verified by a test command" width="820">
+<img src="docs/cli-run.gif" alt="A real nysera run: three lanes planned, run in parallel by Claude Sonnet 5.5 and GPT-6.1, files written and verified by python -m unittest" width="820">
 
-<sub>Screenshot from demo mode (<code>NYSERA_MOCK=1</code>), which runs the whole flow offline.</sub>
+<sub>A real, unedited run recorded on a phone (Termux): live models through OpenRouter, real files, real <code>python -m unittest</code>. Idle seconds trimmed.</sub>
 
 </div>
 
